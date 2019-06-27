@@ -10,8 +10,6 @@ abstract class EndlessRecyclerViewScrollListener (layoutManager : RecyclerView.L
     RecyclerView.OnScrollListener() {
     // The minimum amount of items to have below your current scroll position
     // before loading more.
-    private var pageReturnLoadMore : Int = 0
-
 
     private var visibleThreshold = 5
     // The current offset index of data you have loaded
@@ -90,9 +88,9 @@ abstract class EndlessRecyclerViewScrollListener (layoutManager : RecyclerView.L
         // the visibleThreshold and need to reload more data.
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
-        if (!loading && lastVisibleItemPosition + visibleThreshold > totalItemCount && currentPage - pageReturnLoadMore < 3) {
+        if (!loading && lastVisibleItemPosition + visibleThreshold > totalItemCount ) {
             currentPage++
-            pageReturnLoadMore = onLoadMore(currentPage, totalItemCount, view)
+            onLoadMore(currentPage, totalItemCount, view)
             loading = true
         }
     }
@@ -105,6 +103,6 @@ abstract class EndlessRecyclerViewScrollListener (layoutManager : RecyclerView.L
     }
 
     // Defines the process for actually loading more data based on page
-    abstract fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) : Int
+    abstract fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView)
 
 }

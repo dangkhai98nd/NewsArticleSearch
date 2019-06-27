@@ -48,6 +48,8 @@ class MainActivity : AppCompatActivity() {
     var page: Int = 0
 
 
+    var isLoading : Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -76,8 +78,7 @@ class MainActivity : AppCompatActivity() {
             .build()
 
 
-
-        val toolbarTitle : TextView = toolbarTitle
+        val toolbarTitle: TextView = toolbarTitle
 
         toolbarTitle.setOnClickListener { initViews() }
         initViews()
@@ -115,15 +116,15 @@ class MainActivity : AppCompatActivity() {
         val layoutManager = rvMain.layoutManager
         if (layoutManager != null) {
             scrollListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
-                override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) : Int {
-                    if (this@MainActivity.page - page < 3) {
+                override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
+                    if (!(isLoading))
+                    {
                         this@MainActivity.page++
-
+                        isLoading = true
                         loadJSON()
                         scrollListener?.resetState()
                     }
 
-                    return this@MainActivity.page
                 }
 
             }
@@ -134,7 +135,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun loadJSON(mapQueryMore : HashMap<String,String>? = null) {
+    private fun loadJSON(mapQueryMore: HashMap<String, String>? = null) {
         try {
             val mapQuery = hashMapOf("page" to page.toString())
             if (mapQueryMore != null) {
@@ -146,12 +147,13 @@ class MainActivity : AppCompatActivity() {
             call?.run {
                 enqueue(object : Callback<ArticleSearch> {
                     override fun onFailure(call: Call<ArticleSearch>, t: Throwable) {
-
+                        Toast.makeText(this@MainActivity, "error load data page $page",Toast.LENGTH_SHORT).show()
+                        Log.e("error load data page ",page.toString())
                     }
 
                     override fun onResponse(call: Call<ArticleSearch>, response: Response<ArticleSearch>) {
                         newsList = response.body()?.response?.docs
-                        Toast.makeText(this@MainActivity,"$page", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, "$page", Toast.LENGTH_SHORT).show()
                         adapter?.addAll(newsList ?: return)
                         if (page == 0) {
                             if (srlMain.isRefreshing) {
@@ -159,7 +161,7 @@ class MainActivity : AppCompatActivity() {
                             }
                             pd?.dismiss()
                         }
-
+                        isLoading = false
                     }
                 })
             }
@@ -171,7 +173,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_toobar,menu)
+        menuInflater.inflate(R.menu.menu_toobar, menu)
         val mSearch = menu.findItem(R.id.action_search)
         val mOptions = menu.findItem(R.id.options)
 
@@ -185,9 +187,9 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                Toast.makeText(this@MainActivity,mSearchView.query,Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, mSearchView.query, Toast.LENGTH_SHORT).show()
                 adapter?.clearList()
-                page=0
+                page = 0
 
                 loadJSON(hashMapOf("q" to mSearchView.query.toString()))
                 return false
@@ -195,20 +197,11 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-//        mOptionsView.setOnClickListener(object : MenuItem.OnMenuItemClickListener{
-//            override fun onMenuItemClick(item: MenuItem?): Boolean {
-//                val fragmentManager : FragmentManager = supportFragmentManager
-//                val optionsDialog : OptionsDialog = OptionsDialog()
-//                optionsDialog.show(fragmentManager,null)
-//                return false
-//            }
-//
-//        })
 
         mOptions.setOnMenuItemClickListener {
-            val fragmentManager : FragmentManager = supportFragmentManager
+            val fragmentManager: FragmentManager = supportFragmentManager
             val optionsDialog = OptionsDialog()
-            optionsDialog.show(fragmentManager,null)
+            optionsDialog.show(fragmentManager, null)
             false
         }
 
