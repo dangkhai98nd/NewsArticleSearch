@@ -1,6 +1,8 @@
 package com.example.newsarticlesearch.adapter
 
+import android.content.ComponentName
 import android.content.Context
+import android.net.Uri
 import android.support.customtabs.CustomTabsClient
 import android.support.customtabs.CustomTabsIntent
 import android.support.customtabs.CustomTabsServiceConnection
@@ -17,50 +19,64 @@ import com.example.newsarticlesearch.models.News
 
 class NewsAdapter (
     private var mContext : Context,
-    private var mNewsList : List<News>
+    private var mCustomTabsIntent: CustomTabsIntent?
 ) :RecyclerView.Adapter<NewsAdapter.ItemViewHolder> ()
 {
+
+    private var mNewsList : MutableList<News> = arrayListOf()
+
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ItemViewHolder {
         val view : View = LayoutInflater.from(mContext).inflate(R.layout.item_news, p0,false)
         return ItemViewHolder(view)
     }
 
-    override fun getItemCount(): Int = mNewsList.size ?: 0
+    override fun getItemCount(): Int = mNewsList.size
 
     override fun onBindViewHolder(p0: ItemViewHolder, p1: Int) {
         val mNews = mNewsList[p1]
-        Glide.with(mContext)
-            .load(mNews.multimedia?.get(0)?.getUrlPath())
-            .into(p0.thumbnail)
+        val multimediaList : List<News.Multimedia>? = mNews.multimedia
+        if (multimediaList?.size != 0)
+        {
+            p0.thumbnail.visibility = ImageView.VISIBLE
+            Glide.with(mContext)
+                .load(mNews.multimedia?.get(0)?.getUrlPath())
+                .thumbnail(Glide.with(mContext).load(R.drawable.icon_load))
+                .fitCenter()
+                .into(p0.thumbnail)
+        }
+        else {
+            p0.thumbnail.visibility = ImageView.GONE
+        }
 
         p0.title.text = mNews.snippet
 
+
     }
 
-    class ItemViewHolder (
+    inner class ItemViewHolder (
         val view: View
     ): RecyclerView.ViewHolder(view) {
         var thumbnail: ImageView = view.findViewById(R.id.thumbnail)
         var title : TextView = view.findViewById(R.id.title)
 
-        var value = view.setOnClickListener(object : View.OnClickListener{
-            override fun onClick(v: View?) {
-                val pos : Int = adapterPosition
-                if (pos != RecyclerView.NO_POSITION)
-                {
-                    val CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome"
-                    val websiteURL = "http://viralandroid.com/"
-                    val googleURL = "http://google.com/"
+        var value = view.setOnClickListener {
+            val pos : Int = adapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                mCustomTabsIntent?.launchUrl(mContext, Uri.parse(mNewsList[pos].web_url))
 
-                    var mCustomTabsClient: CustomTabsClient? = null
-                    var mCustomTabsSession: CustomTabsSession? = null
-                    var mCustomTabsServiceConnection: CustomTabsServiceConnection? = null
-                    var mCustomTabsIntent: CustomTabsIntent? = null
-
-
-                }
             }
-        })
+        }
 
     }
+
+    fun addAll( morenews: List<News>) {
+        mNewsList.addAll(morenews)
+        notifyDataSetChanged()
+    }
+
+    fun clearList()
+    {
+        mNewsList = arrayListOf()
+    }
+
 }

@@ -3,6 +3,7 @@ package com.example.newsarticlesearch.models
 
 
 class ArticleSearch (
+
     var status : String? = null,
     var copyright : String? = null,
     var response: Response? = null

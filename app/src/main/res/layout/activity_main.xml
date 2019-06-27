@@ -1,28 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:padding="16dp"
-              android:orientation="vertical">
+<android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        xmlns:tools="http://schemas.android.com/tools" xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/srlMain"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity"
+        android:orientation="vertical">
 
-    <!--<Button-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:onClick="chromeCustomTabExample"-->
-            <!--android:text="Open Chrome Custom Tab"/>-->
-
-    <!--<Button-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:onClick="chromeCustomTabGoogle"-->
-            <!--android:text="Open Google in Chrome Custom Tab"/>-->
-    <android.support.v7.widget.RecyclerView
-            android:orientation="vertical"
-            android:id="@+id/rvMain"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-    </android.support.v7.widget.RecyclerView>
+    <RelativeLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
 
-</RelativeLayout>
+        <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorPrimary"
+                android:minHeight="?attr/actionBarSize">
+
+            <TextView
+                    android:id="@+id/toolbarTitle"
+                    style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+                    android:background="?attr/selectableItemBackground"
+                    android:layout_width="match_parent"
+                    android:text="News Article Search"
+                    android:gravity="center_vertical"
+                    android:layout_height="?attr/actionBarSize" />
+
+        </android.support.v7.widget.Toolbar>
+
+
+        <android.support.v7.widget.RecyclerView
+                android:orientation="vertical"
+                android:layout_below="@+id/toolbar"
+                android:id="@+id/rvMain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
+    </RelativeLayout>
+
+
+</android.support.v4.widget.SwipeRefreshLayout>

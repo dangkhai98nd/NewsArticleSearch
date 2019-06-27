@@ -7,7 +7,8 @@ class News (
     var snippet : String? = null,
     var lead_paragraph : String? = null,
     var abstract : String? = null,
-    var blog : List<String>? = null,
+    var print_page : String? = null,
+    var blog : Unit? = null,
     var source : String? = null,
     var multimedia : List<Multimedia>? = null,
     var headline : Headline? = null,
@@ -74,6 +75,7 @@ class News (
     ) {
 
         class Legacy (
+
             var widewidth : Int? = null,
             var wideheight : Int? =null,
             var wide : String? = null
