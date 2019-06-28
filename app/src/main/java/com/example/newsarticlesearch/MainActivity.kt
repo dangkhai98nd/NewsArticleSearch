@@ -16,6 +16,7 @@ import android.support.v7.widget.SearchView
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.util.Log
 import android.view.Menu
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.example.newsarticlesearch.adapter.NewsAdapter
@@ -120,6 +121,7 @@ class MainActivity : AppCompatActivity() {
                     if (!(isLoading))
                     {
                         this@MainActivity.page++
+                        pbLoading.visibility = ProgressBar.VISIBLE
                         isLoading = true
                         loadJSON()
                         scrollListener?.resetState()
@@ -153,15 +155,20 @@ class MainActivity : AppCompatActivity() {
 
                     override fun onResponse(call: Call<ArticleSearch>, response: Response<ArticleSearch>) {
                         newsList = response.body()?.response?.docs
-                        Toast.makeText(this@MainActivity, "$page", Toast.LENGTH_SHORT).show()
+
                         adapter?.addAll(newsList ?: return)
                         if (page == 0) {
                             if (srlMain.isRefreshing) {
                                 srlMain.isRefreshing = false
                             }
                             pd?.dismiss()
+
+
                         }
-                        isLoading = false
+                        if (isLoading) {
+                            pbLoading.visibility = ProgressBar.GONE
+                            isLoading = false
+                        }
                     }
                 })
             }
@@ -208,4 +215,11 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+
+
 }
+
+
+
+
+

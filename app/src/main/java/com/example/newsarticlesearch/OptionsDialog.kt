@@ -25,7 +25,7 @@ class OptionsDialog : DialogFragment() {
         arrayAdapter.setDropDownViewResource(R.layout.spinner_item)
         spinnerSortOrder.adapter = arrayAdapter
 
-//        Toast.makeText(context, spinnerSortOrder.selectedItem.toString(), Toast.LENGTH_SHORT).show()
+
 
         ivBeginDate.setOnClickListener {
             val c = Calendar.getInstance()
