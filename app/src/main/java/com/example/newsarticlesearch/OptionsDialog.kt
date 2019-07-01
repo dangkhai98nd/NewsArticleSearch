@@ -134,6 +134,19 @@ class OptionsDialog : DialogFragment() {
             this.dismiss()
         }
 
+        btnCancel.setOnClickListener{
+            this.dismiss()
+        }
+
+        btnClear.setOnClickListener{
+            edtEndDate.setText("")
+            edtBeginDate.setText("")
+            spinnerSortOrder.setSelection(0)
+            cbArts.isChecked = false
+            cbFashionStyle.isChecked = false
+            cbSport.isChecked = false
+        }
+
     }
 
 

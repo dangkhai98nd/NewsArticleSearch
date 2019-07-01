@@ -36,14 +36,7 @@ import retrofit2.Response
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePresenter.View {
 
-
-
-
-
-
-
     private val CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome"
-
 
     var mCustomTabsClient: CustomTabsClient? = null
     var mCustomTabsSession: CustomTabsSession? = null
@@ -75,7 +68,7 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
                 componentName: ComponentName,
                 customTabsClient: CustomTabsClient
             ) {
-//                mCustomTabsClient = customTabsClient
+
                 customTabsClient.warmup(0L)
                 mCustomTabsSession = customTabsClient.newSession(null)
             }
@@ -122,34 +115,6 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
         pd?.show()
         newsPresenter = NewsPresenter(this)
 
-//        newsPresenter = object : NewsPresenter() {
-//            override fun getMapQuery(mapQuery: HashMap<String, String>) {
-//                mapQuery["page"] = page.toString()
-//                mapQuery.putAll(queryHashMapOptions)
-//
-//                mapQuery.putAll(queryHashMapSearch)
-//            }
-//
-//            override fun onSuccess(newsList: List<News>?) {
-//                adapter?.addAll(newsList ?: return)
-//                if (page == 0) {
-//                    if (srlMain.isRefreshing) {
-//                        srlMain.isRefreshing = false
-//                    }
-//                    rvMain.layoutManager?.scrollToPosition(0)
-//
-//                    pd?.dismiss()
-//                }
-//                if (isLoading) {
-//                    pbLoading.visibility = ProgressBar.GONE
-//                    isLoading = false
-//                }
-//
-//                Log.e("done load data page ", page.toString())
-//            }
-//        }
-
-
         adapter = NewsAdapter(this, mCustomTabsIntent)
 
         if (this.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -176,8 +141,7 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
 
                         mapQuery.putAll(queryHashMapSearch)
                         newsPresenter?.getDataNews(mapQuery)
-//                        loadJSON()
-//                        newsPresenter.getDataNews()
+
                         scrollListener?.resetState()
                     }
 
@@ -193,16 +157,12 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
         mapQuery.putAll(queryHashMapSearch)
         newsPresenter?.getDataNews(mapQuery)
 
-//        loadJSON()
-
     }
 
     private fun updateRecyclerView() {
         pd?.show()
         adapter?.clearList()
         page = 0
-
-//        loadJSON()
 
         val mapQuery = hashMapOf("page" to page.toString())
         mapQuery.putAll(queryHashMapOptions)
@@ -212,51 +172,6 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
 
     }
 
-    private fun loadJSON() {
-        try {
-
-            val mapQuery = hashMapOf("page" to page.toString())
-            mapQuery.putAll(queryHashMapOptions)
-
-            mapQuery.putAll(queryHashMapSearch)
-            val client = Client()
-            val service: Service? = client.getClient()?.create(Service::class.java)
-            val call: Call<ArticleSearch>? = service?.getApiNews(mapQuery)
-            call?.run {
-                enqueue(object : Callback<ArticleSearch> {
-                    override fun onFailure(call: Call<ArticleSearch>, t: Throwable) {
-
-                        loadJSON()
-                        Log.e("error load data page ", page.toString())
-                    }
-
-                    override fun onResponse(call: Call<ArticleSearch>, response: Response<ArticleSearch>) {
-                        newsList = response.body()?.response?.docs
-
-                        adapter?.addAll(newsList ?: return)
-                        if (page == 0) {
-                            if (srlMain.isRefreshing) {
-                                srlMain.isRefreshing = false
-                            }
-                            rvMain.layoutManager?.scrollToPosition(0)
-
-                            pd?.dismiss()
-                        }
-                        if (isLoading) {
-                            pbLoading.visibility = ProgressBar.GONE
-                            isLoading = false
-                        }
-
-                        Log.e("done load data page ", page.toString())
-                    }
-                })
-            }
-
-        } catch (e: Exception) {
-            Log.d("Error ", e.message)
-            Toast.makeText(this@MainActivity, e.toString(), Toast.LENGTH_SHORT).show()
-        }
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_toobar, menu)

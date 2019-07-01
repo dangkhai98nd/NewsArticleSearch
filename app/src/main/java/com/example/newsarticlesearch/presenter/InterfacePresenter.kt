@@ -5,9 +5,7 @@ import com.example.newsarticlesearch.models.News
 interface InterfacePresenter {
     interface View{
 
-
         fun onSuccess(newsList: List<News>?)
-
 
     }
 

@@ -18,7 +18,6 @@ class NewsPresenter(val view: InterfacePresenter.View) : InterfacePresenter.Pres
             call?.run {
                 enqueue(object : Callback<ArticleSearch> {
                     override fun onFailure(call: Call<ArticleSearch>, t: Throwable) {
-
                         getDataNews(mapQuery)
                     }
 
@@ -33,36 +32,4 @@ class NewsPresenter(val view: InterfacePresenter.View) : InterfacePresenter.Pres
         }
     }
 
-
-
-//    fun getDataNews() {
-//        try {
-//            getMapQuery(mapQuery)
-//
-//            val client = Client()
-//            val service: Service? = client.getClient()?.create(Service::class.java)
-//            val call: Call<ArticleSearch>? = service?.getApiNews(mapQuery)
-//            call?.run {
-//                enqueue(object : Callback<ArticleSearch> {
-//                    override fun onFailure(call: Call<ArticleSearch>, t: Throwable) {
-//
-//                        getDataNews()
-//                    }
-//
-//                    override fun onResponse(call: Call<ArticleSearch>, response: Response<ArticleSearch>) {
-//                        onSuccess(response.body()?.response?.docs)
-//                    }
-//                })
-//            }
-//
-//        } catch (e: Exception) {
-//            Log.d("Error ", e.message)
-//        }
-//
-//    }
-
-//    fun getMapQuery (mapQuery : HashMap<String,String>)
-//
-//
-//    abstract fun onSuccess(newsList : List<News>?)
 }
