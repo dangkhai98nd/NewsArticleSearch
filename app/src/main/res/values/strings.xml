@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">NewsArticleSearch</string>
+    <string name="news_article_search">News Article Search</string>
+    <string name="end_date">End Date:</string>
     <string-array name="sort_order">
         <item></item>
         <item>oldest</item>

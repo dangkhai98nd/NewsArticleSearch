@@ -14,27 +14,19 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.StaggeredGridLayoutManager
-import android.util.Log
 import android.view.Menu
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import com.example.newsarticlesearch.adapter.NewsAdapter
-import com.example.newsarticlesearch.api.Client
-import com.example.newsarticlesearch.api.Service
-import com.example.newsarticlesearch.models.ArticleSearch
 import com.example.newsarticlesearch.models.News
 import com.example.newsarticlesearch.presenter.EndlessRecyclerViewScrollListener
-import com.example.newsarticlesearch.presenter.InterfacePresenter
+import com.example.newsarticlesearch.presenter.INewsPresenter
 import com.example.newsarticlesearch.presenter.NewsPresenter
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 @Suppress("DEPRECATION")
-class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePresenter.View {
+class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , INewsPresenter.View {
 
     private val CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome"
 
@@ -55,7 +47,7 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
 
     var isLoading: Boolean = false
 
-    var newsPresenter : InterfacePresenter.Presenter? = null
+    var newsPresenter : INewsPresenter.Presenter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,7 +99,7 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
 
     private fun initViews() {
 
-        page = 0
+        this@MainActivity.page = 0
         newsList = null
         pd = ProgressDialog(this)
         pd?.setMessage("Load...")
@@ -136,7 +128,7 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
                         this@MainActivity.page++
                         pbLoading.visibility = ProgressBar.VISIBLE
                         isLoading = true
-                        val mapQuery = hashMapOf("page" to page.toString())
+                        val mapQuery = hashMapOf("page" to this@MainActivity.page.toString())
                         mapQuery.putAll(queryHashMapOptions)
 
                         mapQuery.putAll(queryHashMapSearch)
@@ -151,7 +143,7 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
         }
         rvMain.addOnScrollListener(scrollListener as RecyclerView.OnScrollListener)
 
-        val mapQuery = hashMapOf("page" to page.toString())
+        val mapQuery = hashMapOf("page" to this@MainActivity.page.toString())
         mapQuery.putAll(queryHashMapOptions)
 
         mapQuery.putAll(queryHashMapSearch)
@@ -162,9 +154,9 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
     private fun updateRecyclerView() {
         pd?.show()
         adapter?.clearList()
-        page = 0
+        this@MainActivity.page = 0
 
-        val mapQuery = hashMapOf("page" to page.toString())
+        val mapQuery = hashMapOf("page" to this@MainActivity.page.toString())
         mapQuery.putAll(queryHashMapOptions)
 
         mapQuery.putAll(queryHashMapSearch)
@@ -180,6 +172,7 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
 
         val mSearchView = mSearch.actionView as SearchView
         mSearchView.queryHint = "Search..."
+
 
 
         mSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -224,7 +217,7 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
 
     override fun onSuccess(newsList: List<News>?) {
         adapter?.addAll(newsList ?: return)
-        if (page == 0) {
+        if (this@MainActivity.page == 0) {
             if (srlMain.isRefreshing) {
                 srlMain.isRefreshing = false
             }
@@ -237,7 +230,7 @@ class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePr
             isLoading = false
         }
 
-        Log.e("done load data page ", page.toString())
+//        Log.e("done load data page ", page.toString())
     }
 
 }

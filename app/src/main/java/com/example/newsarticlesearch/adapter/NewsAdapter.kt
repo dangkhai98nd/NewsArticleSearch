@@ -73,7 +73,7 @@ class NewsAdapter(
     }
 
     fun clearList() {
-        mNewsList = arrayListOf()
+        mNewsList.clear()
     }
 
 }

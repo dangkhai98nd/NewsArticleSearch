@@ -145,6 +145,7 @@ class OptionsDialog : DialogFragment() {
             cbArts.isChecked = false
             cbFashionStyle.isChecked = false
             cbSport.isChecked = false
+            queryHashMap.clear()
         }
 
     }

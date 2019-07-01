@@ -8,12 +8,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class NewsPresenter(val view: InterfacePresenter.View) : InterfacePresenter.Presenter {
+class NewsPresenter(val view: INewsPresenter.View) : INewsPresenter.Presenter {
     override fun getDataNews(mapQuery: HashMap<String, String>) {
         try {
 
-            val client = Client()
-            val service: Service? = client.getClient()?.create(Service::class.java)
+            val service: Service? = Client.getClient()?.create(Service::class.java)
             val call: Call<ArticleSearch>? = service?.getApiNews(mapQuery)
             call?.run {
                 enqueue(object : Callback<ArticleSearch> {
@@ -23,6 +22,7 @@ class NewsPresenter(val view: InterfacePresenter.View) : InterfacePresenter.Pres
 
                     override fun onResponse(call: Call<ArticleSearch>, response: Response<ArticleSearch>) {
                         view.onSuccess(response.body()?.response?.docs)
+                        Log.e("done load date page ",mapQuery["page"])
                     }
                 })
             }
