@@ -25,6 +25,8 @@ import com.example.newsarticlesearch.api.Service
 import com.example.newsarticlesearch.models.ArticleSearch
 import com.example.newsarticlesearch.models.News
 import com.example.newsarticlesearch.presenter.EndlessRecyclerViewScrollListener
+import com.example.newsarticlesearch.presenter.InterfacePresenter
+import com.example.newsarticlesearch.presenter.NewsPresenter
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -32,7 +34,13 @@ import retrofit2.Response
 
 
 @Suppress("DEPRECATION")
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OptionsDialog.OnSendData , InterfacePresenter.View {
+
+
+
+
+
+
 
     private val CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome"
 
@@ -48,8 +56,13 @@ class MainActivity : AppCompatActivity() {
     var scrollListener: EndlessRecyclerViewScrollListener? = null
     var page: Int = 0
 
+    var queryHashMapOptions: HashMap<String, String> = hashMapOf()
+    var queryHashMapSearch: HashMap<String, String> = hashMapOf()
 
-    var isLoading : Boolean = false
+
+    var isLoading: Boolean = false
+
+    var newsPresenter : InterfacePresenter.Presenter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +94,15 @@ class MainActivity : AppCompatActivity() {
 
         val toolbarTitle: TextView = toolbarTitle
 
-        toolbarTitle.setOnClickListener { initViews() }
+        toolbarTitle.setOnClickListener {
+            if (queryHashMapOptions.size == 0 && queryHashMapSearch.size == 0) {
+                rvMain.scrollToPosition(0)
+            } else {
+                queryHashMapOptions = hashMapOf()
+                queryHashMapSearch = hashMapOf()
+                initViews()
+            }
+        }
         initViews()
 
         srlMain.setColorSchemeResources(R.color.red)
@@ -99,6 +120,34 @@ class MainActivity : AppCompatActivity() {
         pd?.setMessage("Load...")
         pd?.setCancelable(false)
         pd?.show()
+        newsPresenter = NewsPresenter(this)
+
+//        newsPresenter = object : NewsPresenter() {
+//            override fun getMapQuery(mapQuery: HashMap<String, String>) {
+//                mapQuery["page"] = page.toString()
+//                mapQuery.putAll(queryHashMapOptions)
+//
+//                mapQuery.putAll(queryHashMapSearch)
+//            }
+//
+//            override fun onSuccess(newsList: List<News>?) {
+//                adapter?.addAll(newsList ?: return)
+//                if (page == 0) {
+//                    if (srlMain.isRefreshing) {
+//                        srlMain.isRefreshing = false
+//                    }
+//                    rvMain.layoutManager?.scrollToPosition(0)
+//
+//                    pd?.dismiss()
+//                }
+//                if (isLoading) {
+//                    pbLoading.visibility = ProgressBar.GONE
+//                    isLoading = false
+//                }
+//
+//                Log.e("done load data page ", page.toString())
+//            }
+//        }
 
 
         adapter = NewsAdapter(this, mCustomTabsIntent)
@@ -118,12 +167,17 @@ class MainActivity : AppCompatActivity() {
         if (layoutManager != null) {
             scrollListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
                 override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                    if (!(isLoading))
-                    {
+                    if (!(isLoading)) {
                         this@MainActivity.page++
                         pbLoading.visibility = ProgressBar.VISIBLE
                         isLoading = true
-                        loadJSON()
+                        val mapQuery = hashMapOf("page" to page.toString())
+                        mapQuery.putAll(queryHashMapOptions)
+
+                        mapQuery.putAll(queryHashMapSearch)
+                        newsPresenter?.getDataNews(mapQuery)
+//                        loadJSON()
+//                        newsPresenter.getDataNews()
                         scrollListener?.resetState()
                     }
 
@@ -133,24 +187,47 @@ class MainActivity : AppCompatActivity() {
         }
         rvMain.addOnScrollListener(scrollListener as RecyclerView.OnScrollListener)
 
-        loadJSON()
+        val mapQuery = hashMapOf("page" to page.toString())
+        mapQuery.putAll(queryHashMapOptions)
+
+        mapQuery.putAll(queryHashMapSearch)
+        newsPresenter?.getDataNews(mapQuery)
+
+//        loadJSON()
 
     }
 
-    private fun loadJSON(mapQueryMore: HashMap<String, String>? = null) {
+    private fun updateRecyclerView() {
+        pd?.show()
+        adapter?.clearList()
+        page = 0
+
+//        loadJSON()
+
+        val mapQuery = hashMapOf("page" to page.toString())
+        mapQuery.putAll(queryHashMapOptions)
+
+        mapQuery.putAll(queryHashMapSearch)
+        newsPresenter?.getDataNews(mapQuery)
+
+    }
+
+    private fun loadJSON() {
         try {
+
             val mapQuery = hashMapOf("page" to page.toString())
-            if (mapQueryMore != null) {
-                mapQuery.putAll(mapQueryMore)
-            }
+            mapQuery.putAll(queryHashMapOptions)
+
+            mapQuery.putAll(queryHashMapSearch)
             val client = Client()
             val service: Service? = client.getClient()?.create(Service::class.java)
             val call: Call<ArticleSearch>? = service?.getApiNews(mapQuery)
             call?.run {
                 enqueue(object : Callback<ArticleSearch> {
                     override fun onFailure(call: Call<ArticleSearch>, t: Throwable) {
-                        Toast.makeText(this@MainActivity, "error load data page $page",Toast.LENGTH_SHORT).show()
-                        Log.e("error load data page ",page.toString())
+
+                        loadJSON()
+                        Log.e("error load data page ", page.toString())
                     }
 
                     override fun onResponse(call: Call<ArticleSearch>, response: Response<ArticleSearch>) {
@@ -161,14 +238,16 @@ class MainActivity : AppCompatActivity() {
                             if (srlMain.isRefreshing) {
                                 srlMain.isRefreshing = false
                             }
+                            rvMain.layoutManager?.scrollToPosition(0)
+
                             pd?.dismiss()
-
-
                         }
                         if (isLoading) {
                             pbLoading.visibility = ProgressBar.GONE
                             isLoading = false
                         }
+
+                        Log.e("done load data page ", page.toString())
                     }
                 })
             }
@@ -190,15 +269,14 @@ class MainActivity : AppCompatActivity() {
 
         mSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(p0: String?): Boolean {
+                queryHashMapSearch = hashMapOf("q" to mSearchView.query.toString())
                 return false
             }
 
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                Toast.makeText(this@MainActivity, mSearchView.query, Toast.LENGTH_SHORT).show()
-                adapter?.clearList()
-                page = 0
 
-                loadJSON(hashMapOf("q" to mSearchView.query.toString()))
+                queryHashMapSearch = hashMapOf("q" to mSearchView.query.toString())
+                updateRecyclerView()
                 return false
             }
 
@@ -208,14 +286,44 @@ class MainActivity : AppCompatActivity() {
         mOptions.setOnMenuItemClickListener {
             val fragmentManager: FragmentManager = supportFragmentManager
             val optionsDialog = OptionsDialog()
+
             optionsDialog.show(fragmentManager, null)
+
+
+            val bundle = Bundle()
+            bundle.putSerializable("queryHashMapOptions", queryHashMapOptions)
+            optionsDialog.arguments = bundle
+
             false
         }
 
         return super.onCreateOptionsMenu(menu)
     }
 
+    override fun sendData(queryMap: HashMap<String, String>) {
+        queryHashMapOptions = queryMap
 
+        updateRecyclerView()
+    }
+
+
+    override fun onSuccess(newsList: List<News>?) {
+        adapter?.addAll(newsList ?: return)
+        if (page == 0) {
+            if (srlMain.isRefreshing) {
+                srlMain.isRefreshing = false
+            }
+            rvMain.layoutManager?.scrollToPosition(0)
+
+            pd?.dismiss()
+        }
+        if (isLoading) {
+            pbLoading.visibility = ProgressBar.GONE
+            isLoading = false
+        }
+
+        Log.e("done load data page ", page.toString())
+    }
 
 }
 

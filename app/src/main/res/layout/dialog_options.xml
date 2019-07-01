@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:orientation="vertical"
+              android:layout_gravity="center"
+              android:layout_height="wrap_content">
+
+    <TextView android:layout_width="wrap_content"
+              android:gravity="center"
+              android:layout_gravity="center"
+              android:text="OPTIONS"
+              android:paddingTop="10dp"
+              android:textSize="25sp"
+
+              android:layout_height="wrap_content" android:textStyle="bold" android:textAllCaps="true"/>
+    <LinearLayout android:layout_width="350dp"
+                  android:orientation="horizontal"
+                  android:padding="10dp"
+                  android:layout_height="wrap_content">
+        <TextView android:layout_width="110dp"
+                  android:gravity="left|center"
+                  android:text="Begin Date :"
+                  android:textSize="20sp"
+                  android:layout_height="match_parent"/>
+        <EditText
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:paddingLeft="10dp"
+                android:hint="yyyymmdd"
+                android:textSize="20sp"
+                android:ems="10"
+                android:id="@+id/edtBeginDate"/>
+        <ImageView android:layout_width="50dp"
+                   android:id="@+id/ivBeginDate"
+                   android:src="@drawable/clock"
+                   android:padding="10dp"
+                   android:layout_height="50dp"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:orientation="horizontal"
+                  android:padding="10dp"
+                  android:layout_height="wrap_content">
+        <TextView android:layout_width="110dp"
+                  android:gravity="left|center"
+                  android:text="End Date :"
+                  android:textSize="20sp"
+                  android:layout_height="match_parent"/>
+        <EditText
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:paddingLeft="10dp"
+                android:hint="yyyymmdd"
+                android:textSize="20sp"
+                android:ems="10"
+                android:id="@+id/edtEndDate"/>
+        <ImageView android:layout_width="50dp"
+                   android:src="@drawable/clock"
+                   android:id="@+id/ivEndDate"
+                   android:padding="10dp"
+                   android:layout_height="50dp"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout android:layout_width="wrap_content"
+                  android:orientation="horizontal"
+                  android:padding="10dp"
+                  android:layout_height="wrap_content">
+        <TextView android:layout_width="110dp"
+                  android:text="Sort Order : "
+                  android:textSize="20sp"
+                  android:gravity="left|center"
+                  android:layout_height="wrap_content"/>
+
+        <Spinner android:layout_width="wrap_content"
+                 android:id="@+id/spinnerSortOrder"
+                 android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="wrap_content"
+                  android:orientation="horizontal"
+                  android:padding="10dp"
+                  android:layout_height="wrap_content">
+        <TextView android:layout_width="110dp"
+                  android:text="News Desk Values : "
+                  android:textSize="20sp"
+                  android:gravity="left|center"
+                  android:layout_height="wrap_content"/>
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+            <LinearLayout android:layout_width="wrap_content"
+                          android:orientation="vertical"
+                          android:layout_height="wrap_content">
+                <CheckBox android:layout_width="wrap_content"
+                          android:text="Arts"
+                          android:id="@+id/cbArts"
+                          android:textSize="20sp"
+                          android:layout_height="wrap_content"/>
+                <CheckBox android:layout_width="wrap_content"
+                          android:text="Fashion &amp; Style"
+                          android:textSize="20sp"
+                          android:id="@+id/cbFashionStyle"
+                          android:layout_height="wrap_content"/>
+                <CheckBox android:layout_width="wrap_content"
+                          android:text="Sports"
+                          android:id="@+id/cbSport"
+                          android:textSize="20sp"
+                          android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <Button
+            android:text="Save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnSave"/>
+
+
+</LinearLayout>
